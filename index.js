@@ -1,6 +1,7 @@
 const https = require('https');
 const http = require('http');
 const mongo = require('./mongo');
+const airtracker = require('./airtracker');
 
 'use strict';
 
@@ -204,17 +205,27 @@ const sendDataToRod = (result) => {
  * Will succeed with the response body.
  */
 exports.handler = (event, context, callback) => {
-    let result = parse(event.data);
-    result.DeviceId = event.device;
-    result.Time = `${new Date(event.time * 1000).toISOString()}`;
-    result.SeqNumber = event.seqNumber;
-    console.log(`device id = ${result.DeviceId}`);
+    if (event.data) {
+        let result = parse(event.data);
+        result.DeviceId = event.device;
+        result.Time = `${new Date(event.time * 1000).toISOString()}`;
+        result.SeqNumber = event.seqNumber;
+        console.log(`device id = ${result.DeviceId}`);
+
+        if ((event.device == "410B41") || (event.device == "410CBA")) {
+            sendDataToClient(result);
+        }
+        if ((event.device == "410CBD") || (event.device == "4102C9")) {
+            sendDataToRod(result);
+        }
+        if ((event.device == "4102CA")) {
+            console.log(`For ${event.device} we are sending to airtracker.`);
+            airtracker.sendData(event);
+        }
+        mongo.sendData(result);
+    } else {
+        console.log(`Received unknown payload ${JSON.stringify(event)}`);
+        console.log(`Received headers ${JSON.stringify(event.headers)}`);
+    }
     callback(null, JSON.stringify({}));
-    if ((event.device == "410B41") || (event.device == "410CBA")) {
-        sendDataToClient(result);
-    }
-    if ((event.device == "410CBD") || (event.device == "4102C9")) {
-        sendDataToRod(result);
-    }
-    mongo.sendData(result);
 };
