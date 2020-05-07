@@ -30,7 +30,7 @@ const createRequest = (options) => {
 
         res.on("end", function (chunk) {
             var body = Buffer.concat(chunks);
-            console.error(`Response from airtracker: ${body.toString()}`);
+            console.log(`Response from airtracker: ${body.toString()}`);
         });
 
         res.on("error", function (error) {
