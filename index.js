@@ -162,12 +162,11 @@ const sendDataToClient = (result) => {
 
 const sendDataToRod = (result) => {
     result.LatestTitle = result.DeviceId;
-    const hostname = 'a896820780ff811eabb7202399e4506e-1289631439.us-west-2.elb.amazonaws.com';  //hostname: 'aab8923201fae11ea802d06452b2a4e9-2068392276.ap-southeast-2.elb.amazonaws.com',
+    const hostname = "stream-ingest.senscity.live"; //'a896820780ff811eabb7202399e4506e-1289631439.us-west-2.elb.amazonaws.com';  //hostname: 'aab8923201fae11ea802d06452b2a4e9-2068392276.ap-southeast-2.elb.amazonaws.com',
     const postData = JSON.stringify(result);
     var options = {
         hostname: hostname,
-        port: 80,
-        path: '/',
+        path: '/21e15dc1',
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -176,7 +175,7 @@ const sendDataToRod = (result) => {
         }
     };
 
-    const req = http.request(options, (res) => {
+    const req = https.request(options, (res) => {
         console.log(`sendDataToRod -> Hostname: ${hostname}, Status: ${res.statusCode}`);
         //console.log('Headers:', JSON.stringify(res.headers));
         res.on('data', (d) => {
