@@ -196,6 +196,38 @@ const sendDataToRod = (result) => {
     req.end();
 }
 
+const sendDataToXeQui = (result) => {
+    result.LatestTitle = result.DeviceId;
+    const postData = JSON.stringify(result);
+    var options = {
+        hostname: 'd.uboro.io',
+        port: 4002,
+        path: '/',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': postData.length
+        }
+    };
+
+    const req = http.request(options, (res) => {
+        console.log(`sendDataToXeQui -> Status: ${res.statusCode}`);
+        res.on('data', (d) => {
+        });
+        res.on('end', () => {
+        });
+        res.on('error', (e) => {
+            console.log('Client error: ${e}');
+        });
+    });
+    req.on('error', (e) => {
+        console.error(e);
+    });
+    console.log(`Data: ${postData}`);
+    req.write(postData);
+    req.end();
+}
+
 /**
  * Pass the data to send as `event.data`, and the request options as
  * `event.options`. For more information see the HTTPS module documentation
@@ -220,6 +252,9 @@ exports.handler = (event, context, callback) => {
         if ((event.device == "4102CA")) {
             console.log(`For ${event.device} we are sending to airtracker.`);
             airtracker.sendData(event);
+        }
+        if ((event.device == "35201E") || (event.device == "34ECF6")) {
+            sendDataToXeQui(result);
         }
         mongo.sendData(result);
     } else {

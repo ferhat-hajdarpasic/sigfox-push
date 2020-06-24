@@ -4,7 +4,7 @@ const sendData = async (result) => {
   try {
     if (process.env.MONGODBADMIN_PASSWORD) {
       const uri = `mongodb+srv://mongodbadmin:${process.env.MONGODBADMIN_PASSWORD}@cluster0-5vszl.mongodb.net/test?retryWrites=true&w=majority`;
-      const client = new MongoClient(uri, { useNewUrlParser: true });
+      const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
       try {
         await client.connect();
 
