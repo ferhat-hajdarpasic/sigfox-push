@@ -160,6 +160,38 @@ const sendDataToClient = (result) => {
     req.end();
 }
 
+const sendDataToClient1 = (result) => {
+    result.LatestTitle = result.DeviceId;
+    const postData = JSON.stringify(result);
+    var options = {
+        hostname: 'insights.warny.io',
+        port: 443,
+        path: '/api/v1/integrations/http/5307dcbcf29127f781dee3af21852636',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': postData.length
+        }
+    };
+
+    const req = https.request(options, (res) => {
+        console.log('Status:', res.statusCode);
+        res.on('data', (d) => {
+        });
+        res.on('end', () => {
+        });
+        res.on('error', (e) => {
+            console.log('Client error: ${e}');
+        });
+    });
+    req.on('error', (e) => {
+        console.error(e);
+    });
+    console.log(`Data: ${postData}`);
+    req.write(postData);
+    req.end();
+}
+
 const sendDataToRod = (result) => {
     result.LatestTitle = result.DeviceId;
     const hostname = "stream-ingest.senscity.live"; //'a896820780ff811eabb7202399e4506e-1289631439.us-west-2.elb.amazonaws.com';  //hostname: 'aab8923201fae11ea802d06452b2a4e9-2068392276.ap-southeast-2.elb.amazonaws.com',
@@ -245,6 +277,9 @@ exports.handler = (event, context, callback) => {
 
         if ((event.device == "410B41") || (event.device == "410CBA")) {
             sendDataToClient(result);
+        }
+        if (event.device == "4103F0") {
+            sendDataToClient1(result);
         }
         if ((event.device == "410CBD") || (event.device == "4102C9")) {
             sendDataToRod(result);
